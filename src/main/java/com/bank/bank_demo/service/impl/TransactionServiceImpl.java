@@ -47,13 +47,9 @@ public class TransactionServiceImpl implements TransactionService {
     //kilitli
     @Transactional
     protected Transaction createTransaction(BigDecimal amount, Long accountId, TransactionType transactionType) {
-        Optional<Account> accountExisting = accountRepository.findByIdWithLock(accountId); // Hesabı güncelleme kilidiyle alıyoruz
-        if (accountExisting.isEmpty()) {
-            log.error("Account not found: {}", accountId);
-            throw new NotFoundAccountException("Account Not Found : " + accountId);
-        }
+        Account account = accountRepository.findByIdWithLock(accountId).orElseThrow(()-> new NotFoundAccountException("Account Not Found : " + accountId)); // Hesabı güncelleme kilidiyle alıyoruz
 
-        Account account = accountExisting.get();
+
         log.info("[Thread: {}] With Lock - Before: Account {} balance: {}",
                 Thread.currentThread().getId(), accountId, account.getBalance());
         Transaction transaction = new Transaction();
@@ -117,7 +113,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
 
-
     @Override
     @Cacheable(value = "transactionHistory", key = "'ALL_TRANSACTIONS_' + #accountId")
     public List<TransactionHistoryResponse> getTransactionHistory(Long accountId, LocalDate startDate, LocalDate endDate) {
@@ -127,41 +122,4 @@ public class TransactionServiceImpl implements TransactionService {
         return TransactionMapper.INSTANCE.transactionHistory(transactions);
     }
 
-
-
-    //kilitsiz
-   /* @Transactional
-    protected Transaction createTransactionWithoutLock(BigDecimal amount, Long accountId, TransactionType transactionType) {
-        Optional<Account> accountExisting = accountRepository.findById(accountId);
-        if (accountExisting.isEmpty()) {
-            log.error("Account not found: {}", accountId);
-            throw new NotFoundAccountException("Account Not Found : " + accountId);
-        }
-
-        Account account = accountExisting.get();
-        log.info("[Thread: {}] With Lock - Before: Account {} balance: {}",
-                Thread.currentThread().getId(), accountId, account.getBalance());
-        log.info("Without Lock - Before: Account {} balance: {}", accountId, account.getBalance());
-
-        Transaction transaction = new Transaction();
-        transaction.setTransactionDate(LocalDate.now());
-        transaction.setType(transactionType);
-        transaction.setAccount(account);
-        transaction.setAmount(amount);
-
-        if (transactionType == TransactionType.WITHDRAWAL) {
-            BigDecimal currentBalance = account.getBalance();
-            if (currentBalance.compareTo(amount) < 0) {
-                log.error("Insufficient balance for account ID: {}", accountId);
-                throw new InsufficientBalanceException("Your balance is insufficient.");
-            }
-            account.setBalance(account.getBalance().subtract(amount));
-        } else {
-            account.setBalance(account.getBalance().add(amount));
-        }
-        accountRepository.save(account);
-        log.info("Without Lock - After: Account {} balance: {}", accountId, account.getBalance());
-
-        return transactionRepository.save(transaction);
-    }*/
 }

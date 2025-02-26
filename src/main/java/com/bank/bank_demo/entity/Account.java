@@ -6,8 +6,11 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Table(name = "accounts")
+
 @Entity
+@Table(name = "accounts", indexes = {
+        @Index(name = "idx_balance", columnList = "balance")
+})
 public class Account {
 
     @Id
