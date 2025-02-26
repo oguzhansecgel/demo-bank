@@ -1,6 +1,15 @@
 # Bankacılık Sistemi API
 
+## Proje Açıklaması
+
 Bu proje, temel bankacılık işlemlerini gerçekleştirebilen bir API'dir. Uygulama, hesap yaratma, hesaba para yatırma, hesaptan para çekme, hesap bakiyesi sorgulama ve işlem tarihçesi sorgulama gibi işlevleri sağlar.
+
+### Retry Mekanizması ve Pessimistic Lock Kullanımı
+
+Projede, özellikle yüksek eşzamanlı işlemlerin olduğu durumlarda veri tutarlılığını sağlamak amacıyla **pessimistic locking** ve **retry mekanizması** kullanılmaktadır.
+
+#### Pessimistic Locking
+Hesap güncelleme işlemlerinde, veri tutarsızlıklarını önlemek amacıyla **pessimistic locking** uygulanmıştır. Bu mekanizma sayesinde, bir işlem sırasında bir hesaba ait kaynağın kilitlenmesi sağlanır, böylece başka bir işlem aynı anda bu veriyi değiştiremez. Bu, özellikle yüksek miktarda para çekme veya yatırma işlemlerinin yapıldığı durumlarda veri bütünlüğünü korur.
 
 ## Kullanılan Teknolojiler
 
@@ -25,8 +34,7 @@ Hesap, bankada açılan hesapları temsil eder. Her hesap, bir hesap sahibine ba
 ### 4. Banka (Bank)
 Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibine ve hesaba sahip işlemlere sahiptir.
 # API Uç Noktaları
-
-### 1. Account Controller
+## Account Controller
 
 - **POST** `/api/v1/account/create/account`  
   Hesap yaratma  
@@ -43,7 +51,11 @@ Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibin
 - **GET** `/api/v1/account/all/accounts`  
   Tüm hesapları listeleme
 
-### 2. AccountHolder Controller
+- **DELETE** `/api/v1/account/delete/account/{accountId}`  
+  Hesap silme  
+  **Path Variable:** `accountId`
+
+## AccountHolder Controller
 
 - **POST** `/api/v1/accountHolder/create/accountHolder`  
   Hesap sahibi yaratma  
@@ -60,6 +72,11 @@ Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibin
 
 - **GET** `/api/v1/accountHolder/all`  
   Tüm hesap sahiplerini listeleme
+
+- **DELETE** `/api/v1/accountHolder/delete/accountHolder/{accountHolderId}`  
+  Hesap sahibi silme  
+  **Path Variable:** `accountHolderId`
+
 
 ### 3. Bank Controller
 
