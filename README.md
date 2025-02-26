@@ -20,6 +20,11 @@ Hesap güncelleme işlemlerinde, veri tutarsızlıklarını önlemek amacıyla *
 - **Docker**: Uygulamanın konteynerize edilmesi amacıyla kullanılır.
 - **PostgreSQL**: Veritabanı olarak kullanılmıştır.
 
+## Proje Görselleri 
+- Grafana
+  ![Grafana Görseli](docs/metrik-grafana.png)
+- Redis Cache
+  ![Redis Cache Görseli](docs/redis-cache.png)
 ## Uygulamada Olan Nesneler
 
 ### 1. Hesap Sahibi (AccountHolder)
