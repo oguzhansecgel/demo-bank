@@ -33,7 +33,7 @@ services:
     networks:
       - common
     volumes:
-      - bank-demo-db-data:/var/lib/postgresql/data
+      - ./db/demo-bank.sql:/docker-entrypoint-initdb.d/demo-bank.sql
 
   prometheus:
     image: prom/prometheus
