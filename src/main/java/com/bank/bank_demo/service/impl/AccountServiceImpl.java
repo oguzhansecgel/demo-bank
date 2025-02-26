@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class AccountServiceImpl implements AccountService {
 
     public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-        this.accountMapper = AccountMapper.INSTANCE; // Mapper'ı da ekleyelim
+        this.accountMapper = AccountMapper.INSTANCE;
     }
 
     @Override
@@ -75,13 +76,25 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.getByAccountWithCustomerIdToList(accounts);
     }
 
-    // Yeni metod: Tüm hesapları listeleme
     @Override
     public List<GetAllAccountResponse> getAllAccounts() {
         log.info("Fetching all accounts.");
         List<Account> accounts = accountRepository.findAll();
         return accountMapper.getAllAccountToListResponse(accounts);
     }
+
+    @Override
+    public void deleteAccount(Long accountId) {
+        Optional<Account> accountOptional = accountRepository.findById(accountId);
+
+        if (accountOptional.isPresent()) {
+            accountRepository.deleteById(accountId);
+            log.info("Account with id {} has been successfully deleted.", accountId);
+        } else {
+            log.warn("Account with id {} not found. Deletion failed.", accountId);
+        }
+    }
+
 
     private String generateAccountNumber(Random random) {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);

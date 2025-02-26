@@ -27,21 +27,26 @@ public class AccountController {
         CreateAccountResponse response = accountService.createAccount(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @GetMapping(value = "/account/balance/{accountId}")
+    @GetMapping("/account/balance/{accountId}")
     public ResponseEntity<GetByAccountBalanceResponse> getBalance(@PathVariable long accountId)
     {
         GetByAccountBalanceResponse response = accountService.getByAccountBalance(accountId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping(value = "/account/customer/{accountHolderId}")
+    @GetMapping( "/account/customer/{accountHolderId}")
     public ResponseEntity<List<GetByAccountWithCustomerId>> getAccountWithCustomerId(@PathVariable long accountHolderId) {
         List<GetByAccountWithCustomerId> response = accountService.getByCustomerId(accountHolderId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/all/accounts")
+    @GetMapping( "/all/accounts")
     public ResponseEntity<List<GetAllAccountResponse>> getAllAccounts() {
         List<GetAllAccountResponse> accounts = accountService.getAllAccounts();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
+    }
+    @DeleteMapping("/delete/account/{accountId}")
+    public void deleteAccount(@PathVariable long accountId)
+    {
+        accountService.deleteAccount(accountId);
     }
 }

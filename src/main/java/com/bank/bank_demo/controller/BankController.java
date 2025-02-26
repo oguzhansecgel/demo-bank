@@ -30,7 +30,7 @@ public class BankController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/bank/{id}")
     public ResponseEntity<UpdateBankResponse> updateBank(@PathVariable Long id, @Valid @RequestBody UpdateBankRequest request) {
         UpdateBankResponse response = bankService.updateBank(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -42,7 +42,7 @@ public class BankController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/get/all/banks")
     public ResponseEntity<List<GetAllBankResponse>> getAllBanks() {
         List<GetAllBankResponse> response = bankService.getAllBanks();
         return new ResponseEntity<>(response, HttpStatus.OK);

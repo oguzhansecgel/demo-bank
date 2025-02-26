@@ -47,4 +47,9 @@ public class AccountHolderController {
         List<GetAllAccountHolderResponse> response = accountHolderService.getAllAccountHolders();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @DeleteMapping("/delete/accountHolder/{accountHolderId}")
+    public void deleteAccountHolder(@PathVariable Long accountHolderId)
+    {
+        accountHolderService.deleteAccountHolder(accountHolderId);
+    }
 }

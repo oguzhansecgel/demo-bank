@@ -13,4 +13,5 @@ public interface AccountService {
     GetByAccountBalanceResponse getByAccountBalance(Long accountId);
     List<GetByAccountWithCustomerId> getByCustomerId(Long customerId);
     List<GetAllAccountResponse> getAllAccounts();
+    void deleteAccount(Long accountId);
 }

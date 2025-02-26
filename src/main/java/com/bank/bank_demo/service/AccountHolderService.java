@@ -15,4 +15,5 @@ public interface AccountHolderService {
     UpdateAccountHolderResponse updateAccountHolder(UpdateAccountHolderRequest request, Long id);
     GetByIdAccountHolderResponse getByIdAccountHolder(Long id);
     List<GetAllAccountHolderResponse> getAllAccountHolders();
+    void deleteAccountHolder(Long id);
 }

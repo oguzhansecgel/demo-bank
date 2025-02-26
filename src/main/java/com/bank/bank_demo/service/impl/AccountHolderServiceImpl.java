@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountHolderServiceImpl implements AccountHolderService {
@@ -74,5 +75,18 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
         return AccountHolderMapper.INSTANCE.getAllAccountHoldersToList(accountHolders);
     }
+
+    @Override
+    public void deleteAccountHolder(Long id) {
+        Optional<AccountHolder> accountHolderOptional = accountHolderRepository.findById(id);
+
+        if (accountHolderOptional.isPresent()) {
+            accountHolderRepository.deleteById(id);
+            log.info("AccountHolder with id {} has been successfully deleted.", id);
+        } else {
+            log.warn("AccountHolder with id {} not found. Deletion failed.", id);
+        }
+    }
+
 
 }
