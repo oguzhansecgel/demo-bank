@@ -1,34 +1,23 @@
 package com.bank.bank_demo.dto.response.transaction;
 
 import com.bank.bank_demo.entity.TransactionType;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-public class TransactionHistoryResponse {
+public class TransactionResponse {
     private long id;
     private BigDecimal amount;
     private TransactionType type;
     private long accountId;
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate transactionDate;
 
-
-
-    public TransactionHistoryResponse() {
+    public TransactionResponse() {
     }
 
-    public TransactionHistoryResponse(long id, BigDecimal amount, TransactionType type, long accountId, LocalDate transactionDate) {
+    public TransactionResponse(long id, BigDecimal amount, TransactionType type, long accountId) {
         this.id = id;
         this.amount = amount;
         this.type = type;
         this.accountId = accountId;
-        this.transactionDate = transactionDate;
     }
 
     public long getId() {
@@ -61,13 +50,5 @@ public class TransactionHistoryResponse {
 
     public void setAccountId(long accountId) {
         this.accountId = accountId;
-    }
-
-    public LocalDate getTransactionDate() {
-        return transactionDate;
-    }
-
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
     }
 }

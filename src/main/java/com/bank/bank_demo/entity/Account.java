@@ -15,6 +15,7 @@ public class Account {
     private long id;
 
     private BigDecimal balance;
+    @Column(unique = true)
     private String accountNumber;
 
     @ManyToOne

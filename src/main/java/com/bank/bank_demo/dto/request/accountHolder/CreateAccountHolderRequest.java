@@ -1,5 +1,6 @@
 package com.bank.bank_demo.dto.request.accountHolder;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

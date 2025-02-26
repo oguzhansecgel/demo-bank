@@ -24,7 +24,6 @@ Hesap, bankada açılan hesapları temsil eder. Her hesap, bir hesap sahibine ba
 
 ### 4. Banka (Bank)
 Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibine ve hesaba sahip işlemlere sahiptir.
-
 # API Uç Noktaları
 
 ### 1. Account Controller
@@ -37,11 +36,30 @@ Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibin
   Hesap bakiyesi sorgulama  
   **Path Variable:** `accountId`
 
+- **GET** `/api/v1/account/account/customer/{accountHolderId}`  
+  Hesapları hesap sahibine göre listeleme  
+  **Path Variable:** `accountHolderId`
+
+- **GET** `/api/v1/account/all/accounts`  
+  Tüm hesapları listeleme
+
 ### 2. AccountHolder Controller
 
 - **POST** `/api/v1/accountHolder/create/accountHolder`  
   Hesap sahibi yaratma  
   **Body:** `CreateAccountHolderRequest`
+
+- **PUT** `/api/v1/accountHolder/update/{id}`  
+  Hesap sahibi güncelleme  
+  **Path Variable:** `id`  
+  **Body:** `UpdateAccountHolderRequest`
+
+- **GET** `/api/v1/accountHolder/get/{id}`  
+  Hesap sahibinin bilgilerini getirme  
+  **Path Variable:** `id`
+
+- **GET** `/api/v1/accountHolder/all`  
+  Tüm hesap sahiplerini listeleme
 
 ### 3. Bank Controller
 
@@ -75,11 +93,12 @@ Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibin
   Hesaptan para çekme  
   **Body:** `TransactionWithdrawalRequest`
 
-- **GET** `/api/v1/transaction/history`  
+- **GET** `/api/v1/transaction/history/{accountId}`  
   İşlem tarihçesi sorgulama  
+  **Path Variable:** `accountId`  
   **Query Parameters:**
-    - `startDate`: Başlangıç tarihi (format: dd/MM/yyyy)
-    - `endDate`: Bitiş tarihi (format: dd/MM/yyyy)
+  - `startDate`: Başlangıç tarihi (format: dd/MM/yyyy)
+  - `endDate`: Bitiş tarihi (format: dd/MM/yyyy)
 
 
 ## Projeyi Çalıştırma

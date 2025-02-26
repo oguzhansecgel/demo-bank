@@ -35,12 +35,14 @@ public class TransactionController {
         TransactionWithdrawalResponse response = transactionService.withdrawal(transactionRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping("/history")
+    @GetMapping("/history/{accountId}")
     public ResponseEntity<List<TransactionHistoryResponse>> getTransactionHistory(
+            @PathVariable("accountId") Long accountId,
             @RequestParam("startDate") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate startDate,
             @RequestParam("endDate") @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate endDate) {
-        List<TransactionHistoryResponse> transactionHistory = transactionService.getTransactionHistory(startDate, endDate);
+        List<TransactionHistoryResponse> transactionHistory = transactionService.getTransactionHistory(accountId, startDate, endDate);
         return ResponseEntity.ok(transactionHistory);
     }
+
 
 }

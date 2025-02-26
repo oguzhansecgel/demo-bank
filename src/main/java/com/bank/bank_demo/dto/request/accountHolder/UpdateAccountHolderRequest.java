@@ -1,10 +1,19 @@
 package com.bank.bank_demo.dto.request.accountHolder;
 
-public class UpdateAccountHolderRequest {
-    private String holderName;
-    private String holderSurname;
-    private String identityNumber;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
+public class UpdateAccountHolderRequest {
+    @NotBlank(message = "Holder name cannot be blank")
+    private String holderName;
+
+    @NotBlank(message = "Holder surname cannot be blank")
+    private String holderSurname;
+
+    @NotBlank(message = "Identity number cannot be blank")
+    @Size(min = 11, max = 11, message = "Identity number must be 11 characters long")
+    private String identityNumber;
     public UpdateAccountHolderRequest() {
     }
 

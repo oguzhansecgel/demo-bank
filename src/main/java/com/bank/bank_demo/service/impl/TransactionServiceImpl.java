@@ -19,70 +19,76 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
+
+
+
     public TransactionServiceImpl(TransactionRepository transactionRepository, AccountRepository accountService) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountService;
     }
 
+    private Transaction createTransaction(BigDecimal amount, Long accountId, TransactionType transactionType) {
+        Account account = accountRepository.findAccountForUpdate(accountId).orElseThrow(()->new NotFoundAccountException("Account Not Found : " + accountId));
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionDate(LocalDate.now());
+        transaction.setType(transactionType);
+        transaction.setAccount(account);
+        transaction.setAmount(amount);
+
+        if (transactionType.equals(TransactionType.WITHDRAWAL)) {
+            BigDecimal currentBalance = account.getBalance();
+            if (currentBalance.compareTo(amount) < 0) {
+                log.error("Insufficient balance for account ID: {}", accountId);
+                throw new InsufficientBalanceException("Your balance is insufficient.");
+            }
+            account.setBalance(account.getBalance().subtract(amount));
+        } else {
+            account.setBalance(account.getBalance().add(amount));
+        }
+        accountRepository.save(account);
+
+        return transactionRepository.save(transaction);
+    }
+
+    // Para yatırma
     @Override
-    @CacheEvict(value = "transactionHistory", key = "'ALL_TRANSACTIONS'")
+    @CacheEvict(value = "transactionHistory", key = "'ALL_TRANSACTIONS_' + #transactionRequest.accountId")
     public TransactionDepositResponse deposit(TransactionDepositRequest transactionRequest) {
         log.info("Depositing amount: {} to account ID: {}", transactionRequest.getAmount(), transactionRequest.getAccountId());
-        Optional<Account> accountExisting = accountRepository.findById(transactionRequest.getAccountId());
-        if(accountExisting.isEmpty()) {
-            log.error("Account not found: {}", transactionRequest.getAccountId());
-            throw new NotFoundAccountException("Account Not Found : " + transactionRequest.getAccountId());
-        }
 
-        Transaction transaction = TransactionMapper.INSTANCE.transactionDeposit(transactionRequest);
-        transaction.setTransactionDate(LocalDate.now());
-        transaction.setType(TransactionType.DEPOSIT);
-        Account account = accountExisting.get();
-        account.setBalance(account.getBalance().add(transactionRequest.getAmount()));
+        Transaction savedTransaction = createTransaction(transactionRequest.getAmount(),
+                transactionRequest.getAccountId(),
+                TransactionType.DEPOSIT);
 
-        Transaction savedTransaction = transactionRepository.save(transaction);
         log.info("Deposit transaction created with ID: {}, Amount: {}", savedTransaction.getId(), savedTransaction.getAmount());
 
         return new TransactionDepositResponse(savedTransaction.getId(), savedTransaction.getAmount(),
                 savedTransaction.getType(), savedTransaction.getAccount().getId());
     }
 
-    // para çekme
+    // Para çekme
     @Override
-    @CacheEvict(value = "transactionHistory", key = "'ALL_TRANSACTIONS'")
+    @CacheEvict(value = "transactionHistory", key = "'ALL_TRANSACTIONS_' + #transactionRequest.accountId")
     public TransactionWithdrawalResponse withdrawal(TransactionWithdrawalRequest transactionRequest) {
         log.info("Withdrawing amount: {} from account ID: {}", transactionRequest.getAmount(), transactionRequest.getAccountId());
-        Optional<Account> accountExisting = accountRepository.findById(transactionRequest.getAccountId());
-        if(accountExisting.isEmpty()) {
-            log.error("Account not found: {}", transactionRequest.getAccountId());
-            throw new NotFoundAccountException("Account Not Found : " + transactionRequest.getAccountId());
-        }
 
-        Transaction transaction = TransactionMapper.INSTANCE.transactionWithdrawal(transactionRequest);
-        transaction.setTransactionDate(LocalDate.now());
-        transaction.setType(TransactionType.WITHDRAWAL);
-        Account account = accountExisting.get();
-        BigDecimal currentBalance = account.getBalance();
-        BigDecimal amountToWithdraw = transactionRequest.getAmount();
-        if (currentBalance.compareTo(amountToWithdraw) < 0) {
-            log.error("Insufficient balance for account ID: {}", transactionRequest.getAccountId());
-            throw new InsufficientBalanceException("Your balance is insufficient.");
-        }
-
-        account.setBalance(account.getBalance().subtract(transactionRequest.getAmount()));
-        Transaction savedTransaction = transactionRepository.save(transaction);
+        Transaction savedTransaction = createTransaction(transactionRequest.getAmount(),
+                transactionRequest.getAccountId(),
+                TransactionType.WITHDRAWAL);
 
         log.info("Withdrawal transaction created with ID: {}, Amount: {}", savedTransaction.getId(), savedTransaction.getAmount());
 
@@ -90,12 +96,15 @@ public class TransactionServiceImpl implements TransactionService {
                 savedTransaction.getType(), savedTransaction.getAccount().getId());
     }
 
+
     @Override
-    @Cacheable(value = "transactionHistory", key = "'ALL_TRANSACTIONS'")
-    public List<TransactionHistoryResponse> getTransactionHistory(LocalDate startDate, LocalDate endDate) {
-        log.info("Fetching transaction history from {} to {}", startDate, endDate);
-        List<Transaction> transactions = transactionRepository.findByTransactionDateBetween(startDate, endDate);
-        log.info("Fetched {} transactions", transactions.size());
+    @Cacheable(value = "transactionHistory", key = "'ALL_TRANSACTIONS_' + #accountId")
+    public List<TransactionHistoryResponse> getTransactionHistory(Long accountId, LocalDate startDate, LocalDate endDate) {
+        log.info("Fetching transaction history for account ID: {} from {} to {}", accountId, startDate, endDate);
+        List<Transaction> transactions = transactionRepository.findByAccountIdAndTransactionDateBetween(accountId, startDate, endDate);
+        log.info("Fetched {} transactions for account {}", transactions.size(), accountId);
         return TransactionMapper.INSTANCE.transactionHistory(transactions);
     }
+
+
 }

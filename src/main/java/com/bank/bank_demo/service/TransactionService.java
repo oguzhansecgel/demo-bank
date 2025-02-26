@@ -13,5 +13,5 @@ public interface TransactionService {
 
     TransactionDepositResponse deposit(TransactionDepositRequest transactionRequest);
     TransactionWithdrawalResponse withdrawal(TransactionWithdrawalRequest transactionRequest);
-    List<TransactionHistoryResponse> getTransactionHistory(LocalDate startDate, LocalDate endDate);
+    List<TransactionHistoryResponse> getTransactionHistory(Long accountId, LocalDate startDate, LocalDate endDate);
 }

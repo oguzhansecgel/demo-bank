@@ -22,7 +22,7 @@ public interface TransactionMapper {
     @Mapping(source = "accountId",target = "account.id")
     Transaction transactionWithdrawal(TransactionWithdrawalRequest request);
 
-    @Mapping(source = "accountId",target = "account.id")
+    @Mapping(source = "account.id",target = "accountId")
     List<TransactionHistoryResponse> transactionHistory(List<Transaction> transaction);
 
 }
