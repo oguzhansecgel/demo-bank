@@ -39,6 +39,8 @@ Hesap, bankada açılan hesapları temsil eder. Her hesap, bir hesap sahibine ba
 ### 4. Banka (Bank)
 Banka, sisteme ait bankaları temsil eder. Bir banka, birden fazla hesap sahibine ve hesaba sahip işlemlere sahiptir.
 # API Uç Noktaları
+## Swagger Link 
+http://localhost:8081/swagger-ui/index.html
 ## Account Controller
 
 - **POST** `/api/v1/account/create/account`  
