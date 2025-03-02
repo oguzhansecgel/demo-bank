@@ -12,13 +12,20 @@ public class Bank {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String name;
+
     private String code;
 
     @OneToMany(mappedBy = "bank", cascade = CascadeType.ALL)
     private List<Account> accounts;
 
     public Bank() {
+    }
+
+    public Bank( String name, String code) {
+        this.name = name;
+        this.code = code;
     }
 
     public Bank(long id, String name, String code, List<Account> accounts) {

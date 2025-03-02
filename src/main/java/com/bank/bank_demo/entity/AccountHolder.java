@@ -12,9 +12,12 @@ public class AccountHolder {
     private long id;
 
     private String holderName;
+
     private String holderSurname;
+
     @Column(unique = true)
     private String identityNumber;
+
     @OneToMany(mappedBy = "accountHolder", cascade = CascadeType.ALL)
     private List<Account> accounts;
 

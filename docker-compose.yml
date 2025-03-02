@@ -1,5 +1,3 @@
-
-
 services:
   bank-demo:
     container_name: bank-prod

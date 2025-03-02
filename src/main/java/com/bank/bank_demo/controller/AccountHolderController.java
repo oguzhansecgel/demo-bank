@@ -24,7 +24,7 @@ public class AccountHolderController {
         this.accountHolderService = accountHolderService;
     }
 
-    @PostMapping("/create/accountHolder")
+    @PostMapping("/create")
     public ResponseEntity<CreateAccountHolderResponse> createAccountHolder(@Valid @RequestBody CreateAccountHolderRequest request) {
         CreateAccountHolderResponse response = accountHolderService.createAccountHolder(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -47,7 +47,7 @@ public class AccountHolderController {
         List<GetAllAccountHolderResponse> response = accountHolderService.getAllAccountHolders();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @DeleteMapping("/delete/accountHolder/{accountHolderId}")
+    @DeleteMapping("/delete/{accountHolderId}")
     public void deleteAccountHolder(@PathVariable Long accountHolderId)
     {
         accountHolderService.deleteAccountHolder(accountHolderId);

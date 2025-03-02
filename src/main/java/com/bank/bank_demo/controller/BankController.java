@@ -24,13 +24,13 @@ public class BankController {
         this.bankService = bankService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<CreateBankResponse> createBank(@Valid @RequestBody CreateBankRequest request) {
         CreateBankResponse response = bankService.createBank(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/bank/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<UpdateBankResponse> updateBank(@PathVariable Long id, @Valid @RequestBody UpdateBankRequest request) {
         UpdateBankResponse response = bankService.updateBank(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -42,7 +42,7 @@ public class BankController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/get/all/banks")
+    @GetMapping("/get/all")
     public ResponseEntity<List<GetAllBankResponse>> getAllBanks() {
         List<GetAllBankResponse> response = bankService.getAllBanks();
         return new ResponseEntity<>(response, HttpStatus.OK);

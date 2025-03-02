@@ -22,14 +22,17 @@ public class BankServiceImpl implements BankService {
 
     private final BankRepository bankRepository;
     private Logger log = LoggerFactory.getLogger(BankServiceImpl.class);
-    public BankServiceImpl(BankRepository bankRepository) {
+    private final BankMapper bankMapper;
+
+    public BankServiceImpl(BankRepository bankRepository, BankMapper bankMapper) {
         this.bankRepository = bankRepository;
+        this.bankMapper = bankMapper;
     }
 
     @Override
     public CreateBankResponse createBank(CreateBankRequest request) {
         log.info("Creating new bank with name: {}", request.getName());
-        Bank bank = BankMapper.INSTANCE.createBank(request);
+        Bank bank = bankMapper.createBank(request);
         Bank savedBank = bankRepository.save(bank);
 
         log.info("Bank created with ID: {}, Name: {}", savedBank.getId(), savedBank.getName());
@@ -46,8 +49,8 @@ public class BankServiceImpl implements BankService {
                     return new EntityNotFoundException("Bank not found");
                 });
 
-        BankMapper.INSTANCE.updateBank(request, existingBank);
-        Bank updatedBank = bankRepository.save(existingBank);
+        Bank bank = bankMapper.updateBank(request, existingBank);
+        Bank updatedBank = bankRepository.save(bank);
 
         log.info("Bank updated with ID: {}, Name: {}", updatedBank.getId(), updatedBank.getName());
 
@@ -64,7 +67,7 @@ public class BankServiceImpl implements BankService {
                 });
 
         log.info("Fetched bank with ID: {}", bank.getId());
-        return BankMapper.INSTANCE.getByIdBank(bank);
+        return bankMapper.getByIdBank(bank);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class BankServiceImpl implements BankService {
         log.info("Fetching all banks");
         List<Bank> banks = bankRepository.findAll();
         log.info("Fetched {} banks", banks.size());
-        return BankMapper.INSTANCE.getAllBanksToList(banks);
+        return bankMapper.getAllBanksToList(banks);
     }
 
     @Override

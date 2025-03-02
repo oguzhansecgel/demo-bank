@@ -22,29 +22,29 @@ public class AccountController {
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
-    @PostMapping("/create/account")
+    @PostMapping("/create")
     public ResponseEntity<CreateAccountResponse> createAccount(@Valid @RequestBody CreateAccountRequest request) {
         CreateAccountResponse response = accountService.createAccount(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-    @GetMapping("/account/balance/{accountId}")
+    @GetMapping("/balance/{accountId}")
     public ResponseEntity<GetByAccountBalanceResponse> getBalance(@PathVariable long accountId)
     {
         GetByAccountBalanceResponse response = accountService.getByAccountBalance(accountId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @GetMapping( "/account/customer/{accountHolderId}")
+    @GetMapping( "/customer/{accountHolderId}")
     public ResponseEntity<List<GetByAccountWithCustomerId>> getAccountWithCustomerId(@PathVariable long accountHolderId) {
         List<GetByAccountWithCustomerId> response = accountService.getByCustomerId(accountHolderId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping( "/all/accounts")
+    @GetMapping( "/all")
     public ResponseEntity<List<GetAllAccountResponse>> getAllAccounts() {
         List<GetAllAccountResponse> accounts = accountService.getAllAccounts();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
-    @DeleteMapping("/delete/account/{accountId}")
+    @DeleteMapping("/delete/{accountId}")
     public void deleteAccount(@PathVariable long accountId)
     {
         accountService.deleteAccount(accountId);

@@ -22,7 +22,8 @@ public interface TransactionMapper {
     @Mapping(source = "accountId",target = "account.id")
     Transaction transactionWithdrawal(TransactionWithdrawalRequest request);
 
-    @Mapping(source = "account.id",target = "accountId")
-    List<TransactionHistoryResponse> transactionHistory(List<Transaction> transaction);
+    @Mapping(source = "account.id", target = "accountId")
+    TransactionHistoryResponse transactionHistory(Transaction transaction);
+    List<TransactionHistoryResponse> transactionHistoryToList(List<Transaction> transaction);
 
 }

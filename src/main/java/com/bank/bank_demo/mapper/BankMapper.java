@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface BankMapper {
 
     BankMapper INSTANCE = Mappers.getMapper(BankMapper.class);

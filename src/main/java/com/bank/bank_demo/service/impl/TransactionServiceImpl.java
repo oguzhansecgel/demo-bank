@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -44,10 +43,11 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountService;
     }
+
     //kilitli
     @Transactional
     protected Transaction createTransaction(BigDecimal amount, Long accountId, TransactionType transactionType) {
-        Account account = accountRepository.findByIdWithLock(accountId).orElseThrow(()-> new NotFoundAccountException("Account Not Found : " + accountId)); // Hesabı güncelleme kilidiyle alıyoruz
+        Account account = accountRepository.findByIdWithLock(accountId).orElseThrow(()-> new NotFoundAccountException("Account Not Found : " + accountId));
 
 
         log.info("[Thread: {}] With Lock - Before: Account {} balance: {}",
@@ -77,14 +77,12 @@ public class TransactionServiceImpl implements TransactionService {
     // Para çekme
     @Override
     @CacheEvict(value = "transactionHistory", key = "'ALL_TRANSACTIONS_' + #transactionRequest.accountId")
-    @Retryable(value = InsufficientBalanceException.class, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public TransactionWithdrawalResponse withdrawal(TransactionWithdrawalRequest transactionRequest) {
-        log.info("Withdrawing amount: {} from account ID: {} (Attempt starting)",
-                transactionRequest.getAmount(), transactionRequest.getAccountId());
+        log.info("Withdrawing amount: {} from account ID: {} (Attempt starting)", transactionRequest.getAmount(), transactionRequest.getAccountId());
+
         try {
-            Transaction savedTransaction = createTransaction(transactionRequest.getAmount(),
-                    transactionRequest.getAccountId(),
-                    TransactionType.WITHDRAWAL);
+            Transaction savedTransaction = createTransaction(transactionRequest.getAmount(), transactionRequest.getAccountId(), TransactionType.WITHDRAWAL);
+
             log.info("Withdrawal transaction created with ID: {}, Amount: {}",
                     savedTransaction.getId(), savedTransaction.getAmount());
             return new TransactionWithdrawalResponse(savedTransaction.getId(), savedTransaction.getAmount(),
@@ -102,9 +100,7 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionDepositResponse deposit(TransactionDepositRequest transactionRequest) {
         log.info("Depositing amount: {} to account ID: {}", transactionRequest.getAmount(), transactionRequest.getAccountId());
 
-        Transaction savedTransaction = createTransaction(transactionRequest.getAmount(),
-                transactionRequest.getAccountId(),
-                TransactionType.DEPOSIT);
+        Transaction savedTransaction = createTransaction(transactionRequest.getAmount(), transactionRequest.getAccountId(), TransactionType.DEPOSIT);
 
         log.info("Deposit transaction created with ID: {}, Amount: {}", savedTransaction.getId(), savedTransaction.getAmount());
 
@@ -119,7 +115,7 @@ public class TransactionServiceImpl implements TransactionService {
         log.info("Fetching transaction history for account ID: {} from {} to {}", accountId, startDate, endDate);
         List<Transaction> transactions = transactionRepository.findByAccountIdAndTransactionDateBetween(accountId, startDate, endDate);
         log.info("Fetched {} transactions for account {}", transactions.size(), accountId);
-        return TransactionMapper.INSTANCE.transactionHistory(transactions);
+        return TransactionMapper.INSTANCE.transactionHistoryToList(transactions);
     }
 
 }
