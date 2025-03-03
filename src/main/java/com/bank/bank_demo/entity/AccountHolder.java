@@ -24,6 +24,13 @@ public class AccountHolder {
     public AccountHolder() {
     }
 
+    public AccountHolder(long id, String holderName, String holderSurname, String identityNumber) {
+        this.id = id;
+        this.holderName = holderName;
+        this.holderSurname = holderSurname;
+        this.identityNumber = identityNumber;
+    }
+
     public AccountHolder(long id, String holderName, String holderSurname, String identityNumber, List<Account> accounts) {
         this.id = id;
         this.holderName = holderName;

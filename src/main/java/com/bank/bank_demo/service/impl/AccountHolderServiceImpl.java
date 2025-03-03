@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -23,19 +24,21 @@ public class AccountHolderServiceImpl implements AccountHolderService {
 
 
     private final AccountHolderRepository accountHolderRepository;
+    private final AccountHolderMapper accountHolderMapper;
     private Logger log = LoggerFactory.getLogger(AccountHolderMapper.class);
-    public AccountHolderServiceImpl(AccountHolderRepository accountHolderRepository) {
-        this.accountHolderRepository = accountHolderRepository;
-    }
 
+    public AccountHolderServiceImpl(AccountHolderRepository accountHolderRepository, AccountHolderMapper accountHolderMapper) {
+        this.accountHolderRepository = accountHolderRepository;
+        this.accountHolderMapper = accountHolderMapper;
+    }
 
     @Override
     public CreateAccountHolderResponse createAccountHolder(CreateAccountHolderRequest request) {
-        log.info("Creating new account holder: {}", request.getHolderName());
-        AccountHolder accountHolder = AccountHolderMapper.INSTANCE.createAccountHolder(request);
+        log.info("Creating new account holder: {} {} {}", request.getHolderName(),request.getHolderSurname(),request.getIdentityNumber());
+        AccountHolder accountHolder = accountHolderMapper.createAccountHolder(request);
         AccountHolder savedAccountHolder = accountHolderRepository.save(accountHolder);
 
-        log.info("Account holder created with ID: {}", savedAccountHolder.getId());
+        log.info("Account holder created with ID: {} {} {} {}", savedAccountHolder.getId(), request.getHolderName(),request.getHolderSurname(),request.getIdentityNumber());
 
         return new CreateAccountHolderResponse(savedAccountHolder.getId(), savedAccountHolder.getHolderName(),
                 savedAccountHolder.getHolderSurname(), savedAccountHolder.getIdentityNumber());
@@ -65,7 +68,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
                     return new EntityNotFoundException("AccountHolder not found");
                 });
 
-        return AccountHolderMapper.INSTANCE.getByIdAccountHolder(accountHolder);
+        return accountHolderMapper.getByIdAccountHolder(accountHolder);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
         log.info("Fetching all account holders");
         List<AccountHolder> accountHolders = accountHolderRepository.findAll();
 
-        return AccountHolderMapper.INSTANCE.getAllAccountHoldersToList(accountHolders);
+        return accountHolderMapper.getAllAccountHoldersToList(accountHolders);
     }
 
     @Override
@@ -85,6 +88,7 @@ public class AccountHolderServiceImpl implements AccountHolderService {
             log.info("AccountHolder with id {} has been successfully deleted.", id);
         } else {
             log.warn("AccountHolder with id {} not found. Deletion failed.", id);
+            throw new NoSuchElementException("AccountHolder with id " + id + " not found.");
         }
     }
 
